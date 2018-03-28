@@ -1,0 +1,92 @@
+#include "socfpga_cyclone5.dtsi"
+#include <dt-bindings/interrupt-controller/irq.h>
+
+/ {
+	model = "Terasic DE10-Nano";
+	compatible = "terasic,de10-nano", "altr,socfpga-cyclone5", "altr,socfpga";
+
+	chosen {
+		bootargs = "earlyprintk";
+		stdout-path = "serial0:115200n8";
+	};
+
+	memory@0 {
+		name = "memory";
+		device_type = "memory";
+		reg = <0x0 0x40000000>; /* 1GB */
+	};
+
+	aliases {
+		ethernet0 = &gmac1;
+	};
+
+	regulator_3_3v: 3-3-v-regulator {
+		compatible = "regulator-fixed";
+		regulator-name = "3.3V";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+	};
+};
+
+&gmac1 {
+	status = "okay";
+	phy-mode = "rgmii";
+
+	txd0-skew-ps = <0>; /* -420ps */
+	txd1-skew-ps = <0>; /* -420ps */
+	txd2-skew-ps = <0>; /* -420ps */
+	txd3-skew-ps = <0>; /* -420ps */
+	rxd0-skew-ps = <420>; /* 0ps */
+	rxd1-skew-ps = <420>; /* 0ps */
+	rxd2-skew-ps = <420>; /* 0ps */
+	rxd3-skew-ps = <420>; /* 0ps */
+	txen-skew-ps = <0>; /* -420ps */
+	txc-skew-ps = <1860>; /* 960ps */
+	rxdv-skew-ps = <420>; /* 0ps */
+	rxc-skew-ps = <1680>; /* 780ps */
+
+	max-frame-size = <3800>;
+};
+
+/ {
+	soc {
+		fpga-gpio0@ff200000 {
+			compatible = "wd,mbl-gpio";
+			reg-names = "dat";
+			reg = <0xff200000 0x1>;
+			#gpio-cells = <2>;
+			gpio-controller;
+			status = "okay";
+		};
+
+		fpga-uart0@ff200100 {
+			compatible = "altr,uart-1.0";
+			reg = <0xff200100 0x20>;
+			interrupts = <0 40 IRQ_TYPE_LEVEL_HIGH>;
+			current-speed = <115200>;
+			clock-frequency = <24000000>;
+		};
+
+		fpga-uart1@ff200200 {
+			compatible = "altr,uart-1.0";
+			reg = <0xff200200 0x20>;
+			interrupts = <0 41 IRQ_TYPE_LEVEL_HIGH>;
+			current-speed = <115200>;
+			clock-frequency = <24000000>;
+		};
+	};
+};
+
+&mmc0 {
+	vmmc-supply = <&regulator_3_3v>;
+	vqmmc-supply = <&regulator_3_3v>;
+	status = "okay";
+};
+
+&uart0 {
+	status = "okay";
+};
+
+&usb1 {
+	status = "okay";
+};
