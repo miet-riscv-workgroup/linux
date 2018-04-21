@@ -312,6 +312,7 @@ static int altera_uart_startup(struct uart_port *port)
 	if (!port->irq) {
 		timer_setup(&pp->tmr, altera_uart_timer, 0);
 		mod_timer(&pp->tmr, jiffies + uart_poll_timeout(port));
+		pp->imr = ALTERA_UART_CONTROL_RRDY_MSK;
 		return 0;
 	}
 
